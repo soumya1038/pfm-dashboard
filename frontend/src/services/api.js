@@ -1,28 +1,37 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import axios from "axios";
 
-export const apiRequest = async (path, options = {}) => {
-  const config = {
+const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
     headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
+        "Content-Type": "application/json",
     },
-    ...options,
-  };
+});
 
-  if (config.body && typeof config.body !== "string") {
-    config.body = JSON.stringify(config.body);
-  }
+// Request interceptor
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
-  const response = await fetch(`${API_URL}${path}`, config);
+// Response interceptor
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
+            window.location.href = "/login";
+        }
+        return Promise.reject(error);
+    }
+);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: "Request failed" }));
-    throw new Error(error.message || "Request failed");
-  }
-
-  if (response.status === 204) {
-    return null;
-  }
-
-  return response.json();
-};
+export default api;

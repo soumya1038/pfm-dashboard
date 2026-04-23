@@ -1,22 +1,32 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Layout from "./components/Layout.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import NotFound from "./pages/NotFound.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Layout from "./components/layout/Layout";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import DashboardPage from "./pages/DashboardPage";
+import ProfilePage from "./pages/ProfilePage";
+import AccountsBudgetsPage from "./pages/AccountsBudgetsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const App = () => {
-  return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
+    return (
+        <>
+            <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                
+                <Route element={<Layout />}>
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/accounts-budgets" element={<AccountsBudgetsPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                </Route>
+            </Routes>
+            <ToastContainer position="top-right" autoClose={3000} />
+        </>
+    );
 };
 
 export default App;

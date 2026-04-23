@@ -6,18 +6,19 @@ const userSchema = new mongoose.Schema(
         name: { type: String, required: true, trim: true },
         email: { type: String, required: true, unique: true, lowercase: true, trim: true },
         password: { type: String, required: true, minlength: 6, select: false },
+        profilePicture: { type: String, default: "" },
+        currency: { type: String, default: "USD", enum: ["USD", "EUR", "GBP", "INR", "CAD", "AUD"] },
     },
     { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
     if (!this.isModified("password")) {
-        return next();
+        return;
     }
 
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    return next();
 });
 
 userSchema.methods.matchPassword = function (enteredPassword) {
